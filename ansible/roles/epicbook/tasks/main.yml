@@ -19,12 +19,6 @@
   become: yes
   run_once: true
 
-# - name: Clone EpicBook repository
-#   git:
-#     repo: "{{ repo_url }}"
-#     dest: "{{ app_dir }}"
-#     version: main
-#     force: yes
 
 - name: Sync application files to remote server
   ansible.posix.synchronize:

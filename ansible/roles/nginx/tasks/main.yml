@@ -1,0 +1,24 @@
+---
+- name: Install nginx
+  apt:
+    name: nginx
+    state: present
+
+- name: Remove default nginx site
+  file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+  notify: Reload Nginx
+
+- name: Deploy nginx configuration for EpicBook
+  template:
+    src: epicbook.conf.j2
+    dest: "{{ nginx_conf }}"
+  notify: Reload Nginx
+
+- name: Enable EpicBook nginx site
+  file:
+    src: "{{ nginx_conf }}"
+    dest: "{{ nginx_link }}"
+    state: link
+  notify: Reload Nginx

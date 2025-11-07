@@ -1,0 +1,99 @@
+---
+- name: Ensure rsync is installed
+  become: yes
+  apt:
+    name: rsync
+    state: present
+    update_cache: yes
+
+- name: Ensure app directory exists
+  file:
+    path: "{{ app_dir }}"
+    state: directory
+    owner: www-data
+    group: www-data
+    recurse: yes
+
+- name: Mark directory as safe for git
+  command: git config --global --add safe.directory "{{ app_dir }}"
+  become: yes
+  run_once: true
+
+# - name: Clone EpicBook repository
+#   git:
+#     repo: "{{ repo_url }}"
+#     dest: "{{ app_dir }}"
+#     version: main
+#     force: yes
+
+- name: Sync application files to remote server
+  ansible.posix.synchronize:
+    src: "{{ playbook_dir }}/../Epicbook/"
+    dest: /var/www/epicbook/
+    recursive: yes
+
+- name: Add NodeSource GPG key
+  ansible.builtin.apt_key:
+    url: https://deb.nodesource.com/gpgkey/nodesource.gpg.key
+    state: present
+
+- name: Add NodeSource Node.js 18 repo
+  apt_repository:
+    repo: "deb https://deb.nodesource.com/node_18.x jammy main"
+    state: present
+    filename: nodesource
+
+- name: Install Node.js (includes npm)
+  apt:
+    name: nodejs
+    state: present
+    update_cache: yes
+
+- name: Verify npm installation
+  command: npm --version
+  register: npm_version
+  changed_when: false
+
+- debug:
+    msg: "npm version is {{ npm_version.stdout }}"
+
+- name: Check if package.json exists
+  stat:
+    path: /var/www/epicbook/package.json
+  register: package_json_stat
+
+- name: Install Node.js dependencies
+  command: npm install --omit=dev
+  args:
+    chdir: /var/www/epicbook
+  when: package_json_stat.stat.exists
+
+- name: Run EpicBook database setup
+  import_tasks: db.yml
+
+- name: Create systemd service for EpicBook
+  copy:
+    dest: /etc/systemd/system/epicbook.service
+    content: |
+      [Unit]
+      Description=EpicBook Node.js App
+      After=network.target
+
+      [Service]
+      ExecStart=/usr/bin/node {{ app_dir }}/server.js
+      WorkingDirectory={{ app_dir }}
+      Restart=always
+      User=www-data
+      Group=www-data
+      Environment=NODE_ENV={{ node_env }}
+      Environment=PORT={{ app_port }}
+
+      [Install]
+      WantedBy=multi-user.target
+  notify: Reload systemd
+
+- name: Start and enable EpicBook service
+  systemd:
+    name: epicbook
+    state: started
+    enabled: yes

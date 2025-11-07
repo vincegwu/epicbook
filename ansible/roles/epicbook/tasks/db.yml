@@ -1,0 +1,69 @@
+
+---
+# Wait for MySQL to be ready
+- name: Wait for MySQL to be ready
+  wait_for:
+    host: "{{ mysql_host }}"
+    port: "{{ mysql_port }}"
+    timeout: 300
+    delay: 10
+
+# Install sequelize-cli globally
+- name: Install sequelize-cli globally
+  npm:
+    name: sequelize-cli
+    global: yes
+    state: present
+
+# Create ~/.my.cnf for safe login
+- name: Ensure ~/.my.cnf exists
+  copy:
+    dest: /root/.my.cnf
+    content: |
+      [client]
+      user={{ mysql_username }}
+      password={{ mysql_password }}
+      host={{ mysql_host }}
+    owner: root
+    group: root
+    mode: '0600'
+
+# Import SQL files
+- name: Import SQL files
+  shell: mysql -h {{ mysql_host }} -u {{ mysql_username }} -p{{ mysql_password }} {{ mysql_database }} < {{ app_dir }}/db/BuyTheBook_Schema.sql
+  args:
+    executable: /bin/bash
+
+- name: Import author seed
+  shell: mysql -h {{ mysql_host }} -u {{ mysql_username }} -p{{ mysql_password }} {{ mysql_database }} < {{ app_dir }}/db/author_seed.sql
+  args:
+    executable: /bin/bash
+
+- name: Import books seed
+  shell: mysql -h {{ mysql_host }} -u {{ mysql_username }} -p{{ mysql_password }} {{ mysql_database }} < {{ app_dir }}/db/books_seed.sql
+  args:
+    executable: /bin/bash
+
+# Run migrations if migrations folder exists
+- name: Check migrations folder
+  stat:
+    path: "{{ app_dir }}/migrations"
+  register: migrations_dir
+
+- name: Run migrations
+  command: npx sequelize-cli db:migrate
+  args:
+    chdir: "{{ app_dir }}"
+  when: migrations_dir.stat.exists
+
+# Run seeders if seeders folder exists
+- name: Check seeders folder
+  stat:
+    path: "{{ app_dir }}/seeders"
+  register: seeders_dir
+
+- name: Run seeds
+  command: npx sequelize-cli db:seed:all
+  args:
+    chdir: "{{ app_dir }}"
+  when: seeders_dir.stat.exists

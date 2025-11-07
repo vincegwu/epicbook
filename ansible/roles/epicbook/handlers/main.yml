@@ -1,0 +1,8 @@
+---
+- name: Reload systemd
+  command: systemctl daemon-reload
+
+- name: Restart EpicBook service
+  systemd:
+    name: epicbook
+    state: restarted

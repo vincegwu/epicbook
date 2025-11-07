@@ -1,0 +1,17 @@
+---
+- name: Update and upgrade packages
+  apt:
+    update_cache: yes
+    upgrade: dist
+  tags: update
+
+- name: Install base packages
+  apt:
+    name:
+      - git
+      - curl
+      - mysql-client
+      - vim
+      - build-essential
+      - python3-pip
+    state: present

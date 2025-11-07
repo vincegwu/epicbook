@@ -1,0 +1,35 @@
+<div class="row container">
+  {{#each books}}
+  <div class="col s12 m6 l4">
+    <div class="card">
+      <div class="card-image">
+        <img class="images" src="{{imageUrl}}" alt="{{title}}">
+        <span class="card-title">{{title}}</span>
+        <a class="btn-floating halfway-fab waves-effect waves-light red cart-button" value="{{id}}">
+          <i class="material-icons">add_shopping_cart</i>
+        </a>
+      </div>
+      <div class="card-content">
+        <p>Author: {{Author.name}}</p>
+        <p>Genre: {{genre}}</p>
+        <p>Price: {{price}}</p>
+      </div>
+      <div class="card-action">
+        <a class="modal-trigger" href="#modal-book-{{id}}">View Details</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal for book details -->
+  <div id="modal-book-{{id}}" class="modal">
+    <div class="modal-content">
+      <h4>{{title}}</h4>
+      <p>{{description}}</p>
+      <p>Price: {{price}}</p>
+    </div>
+    <div class="modal-footer">
+      <a class="modal-close waves-effect waves-green btn-flat">Close</a>
+    </div>
+  </div>
+  {{/each}}
+</div>

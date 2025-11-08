@@ -1,3 +1,0 @@
----
-nginx_conf: /etc/nginx/sites-available/epicbook.conf
-nginx_link: /etc/nginx/sites-enabled/epicbook.conf

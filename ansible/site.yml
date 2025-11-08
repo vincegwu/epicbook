@@ -9,7 +9,7 @@
   hosts: web
   become: true
   vars_files:
-    - vars/nginx.yml
+    - group_vars/web.yml
   roles:
     - nginx
 

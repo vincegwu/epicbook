@@ -9,7 +9,7 @@
   hosts: web
   become: true
   vars_files:
-    - group_vars/web.yml
+    - /home/azureuser/myagent/_work/1/s/group_vars/web.yml
   roles:
     - nginx
 

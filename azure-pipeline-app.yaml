@@ -13,18 +13,22 @@ stages:
           name: "linux-hosted-pool"
 
         steps:
+          # 1️⃣ Checkout the repository
           - checkout: self
 
+          # 2️⃣ Install Ansible & SSH dependencies
           - script: |
               sudo apt update
               sudo apt install -y ansible sshpass
             displayName: "Install Ansible & SSH dependencies"
 
+          # 3️⃣ Download SSH private key from secure files
           - task: DownloadSecureFile@1
             name: download_ssh_key
             inputs:
               secureFile: "id_rsa"
 
+          # 4️⃣ Set up SSH key
           - script: |
               mkdir -p ~/.ssh
               cp $(download_ssh_key.secureFilePath) ~/.ssh/id_rsa
@@ -33,10 +37,12 @@ stages:
               chmod 600 ~/.ssh/config
             displayName: "Setup SSH Private Key"
 
+          # 5️⃣ Run Ansible playbook from the correct working directory
           - script: |
-              ansible-playbook -i $(Build.SourcesDirectory)/ansible/inventory.ini \
-                               $(Build.SourcesDirectory)/ansible/site.yml \
+              cd $(Build.SourcesDirectory)/ansible
+              ansible-playbook -i inventory.ini site.yml \
                                --ssh-extra-args "-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
             displayName: "Run Ansible Playbook"
             env:
               ANSIBLE_HOST_KEY_CHECKING: "False"
+

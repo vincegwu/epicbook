@@ -22,7 +22,7 @@
 
 - name: Sync application files to remote server
   ansible.posix.synchronize:
-    src: "{{ playbook_dir }}/../Epicbook/"
+    src: "{{ playbook_dir }}/../app/"
     dest: /var/www/epicbook/
     recursive: yes
 

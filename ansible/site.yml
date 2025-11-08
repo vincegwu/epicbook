@@ -1,22 +1,11 @@
 ---
-- name: Prepare system (common)
+- name: Deploy EpicBook Stack
   hosts: web
   become: true
+  vars_files:
+    - ./group_vars/web.yml
   roles:
     - common
-
-- name: Install and configure Nginx
-  hosts: web
-  become: true
-  vars_files:
-    - group_vars/web.yml
-  roles:
     - nginx
-
-- name: Deploy EpicBook app
-  hosts: web
-  become: true
-  vars_files:
-    - group_vars/web.yml
-  roles:
     - epicbook
+

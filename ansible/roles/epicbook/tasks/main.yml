@@ -62,10 +62,10 @@
     chdir: /var/www/epicbook
   when: package_json_stat.stat.exists
 
-- name: Install dotenv globally
+- name: Install dotenv
   npm:
     name: dotenv
-    global: true
+    path: "{{ app_dir }}"
 
 # - name: Run EpicBook database setup
 #   import_tasks: db.yml

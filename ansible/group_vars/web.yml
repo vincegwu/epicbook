@@ -10,5 +10,6 @@ nginx_link: /etc/nginx/sites-enabled/epicbook.conf
 # Database (from .env)
 mysql_host: epicbook-mysql.mysql.database.azure.com
 mysql_port: 3306
+mysql_database: bookstore
 mysql_username: epicuser
 mysql_password: "Berry123!@"   # quote special characters

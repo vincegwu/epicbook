@@ -8,8 +8,6 @@
 - name: Install and configure Nginx
   hosts: web
   become: true
-  vars_files:
-    - /home/azureuser/myagent/_work/1/s/group_vars/web.yml
   roles:
     - nginx
 

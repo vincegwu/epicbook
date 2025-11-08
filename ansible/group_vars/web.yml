@@ -1,0 +1,14 @@
+---
+# Application
+app_dir: /var/www/epicbook
+repo_url: https://github.com/vincegwu/Epicbook.git
+node_env: production
+app_port: 3000
+nginx_conf: /etc/nginx/sites-available/epicbook.conf
+nginx_link: /etc/nginx/sites-enabled/epicbook.conf
+
+# Database (from .env)
+mysql_host: epicbook-mysql.mysql.database.azure.com
+mysql_port: 3306
+mysql_username: epicuser
+mysql_password: "Berry123!@"   # quote special characters

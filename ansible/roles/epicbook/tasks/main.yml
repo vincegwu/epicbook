@@ -67,8 +67,8 @@
     name: dotenv
     path: "{{ app_dir }}"
 
-- name: Run EpicBook database setup
-  import_tasks: db.yml
+# - name: Run EpicBook database setup
+#   import_tasks: db.yml
 
 - name: Create systemd service for EpicBook
   copy:
